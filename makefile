@@ -9,7 +9,7 @@ $(TARGET): mizzo.o CFactoryParse.o Factory.o Producer.o Consumer.o
 	$(CC) mizzo.o CFactoryParse.o Factory.o Producer.o Consumer.o -o $(TARGET) $(LFLAGS)
 
 mizzo.o: mizzo.cpp
-	$(CC) $(CFLAGS) main.cpp
+	$(CC) $(CFLAGS) mizzo.cpp
 
 CFactoryParse.o: CFactoryParse.cpp CFactoryParse.h
 	$(CC) $(CFLAGS) CFactoryParse.cpp
