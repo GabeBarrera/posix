@@ -1,14 +1,14 @@
 CC = g++
 CFLAGS = -Wall -c
 LFLAGS = -lpthread -lrt
-TARGET = FactorySimulation
+TARGET = mizzo
 
 all: $(TARGET)
 
-$(TARGET): main.o CFactoryParse.o Factory.o Producer.o Consumer.o
-	$(CC) main.o CFactoryParse.o Factory.o Producer.o Consumer.o -o $(TARGET) $(LFLAGS)
+$(TARGET): mizzo.o CFactoryParse.o Factory.o Producer.o Consumer.o
+	$(CC) mizzo.o CFactoryParse.o Factory.o Producer.o Consumer.o -o $(TARGET) $(LFLAGS)
 
-main.o: main.cpp
+mizzo.o: mizzo.cpp
 	$(CC) $(CFLAGS) main.cpp
 
 CFactoryParse.o: CFactoryParse.cpp CFactoryParse.h
