@@ -14,7 +14,7 @@ void *consumeCandy (void *w) {
 	while (loop) {
 		sem_wait(&consumerCritSection->fillCount);			// Decrement full count
 		pthread_mutex_lock(&consumerCritSection->mutex);	// Enter critical section
-			if (consumerCritSection->totalConsumed < TOTAL_CANDIES) {
+			if (consumerCritSection->totalConsumed < CANDY_TOTAL) {
 
 				// Candy is first item off of conveyor belt
 				candyConsumed = consumerCritSection->storage[0];

@@ -28,7 +28,7 @@ void *produceCandy (void *c) {
 
 		sem_wait(&producerCritSection->emptyCount); 		// Decrement empty count
 		pthread_mutex_lock(&producerCritSection->mutex); 	// Enter critical section
-			if (producerCritSection->totalProduced < TOTAL_CANDIES) {
+			if (producerCritSection->totalProduced < CANDY_TOTAL) {
 
 				// Handle Frog Bites
 				if (candyMade == FROG_BITE) {

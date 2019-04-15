@@ -1,6 +1,5 @@
-Producer-Consumer Lab
 CS 570 - Operating Systems
-Viet Truong
+Gabriel Barrera
 
 The purpose of this lab is to develop an understanding of the Producer-Consumer problem and the various concepts that it covers, including:
 	- Posix Multi-threading

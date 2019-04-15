@@ -1,9 +1,23 @@
 #include "mizzo.h"
 
+/**
+ * mizzo.c
+ * 
+ * The driver file. Initializes semaphores, threads,
+ * producers and consumers. When the factory
+ * production is complete, a report is generated. 
+ */
+
 // Main driver. Initializes the semaphore buffer and all
 // the threads, producers, and consumers. It blocks as it
 // waits for production to finish, then proceeds to
 // print a production report output
+
+/**
+ * MAIN	
+ * 	
+ * 
+ */ 
 int main (int argc, char *argv[]) {
 	int flagCheck;
 
@@ -60,8 +74,8 @@ int main (int argc, char *argv[]) {
 
 	// Initialize semaphores
 	sem_init(&crit_section->fillCount, 0, 0);
-	sem_init(&crit_section->emptyCount, 0, MAX_BELT_SIZE);
-	sem_init(&crit_section->frogSem, 0, MAX_FROGS);
+	sem_init(&crit_section->emptyCount, 0, BELT_MAX);
+	sem_init(&crit_section->frogSem, 0, FROG_MAX);
 	sem_init(&crit_section->barrierSem, 0, 0);
 
 	// Initialize mutexes
