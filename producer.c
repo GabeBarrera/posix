@@ -12,11 +12,10 @@ void *produceCandy (void *c) {
 	int candyMade = 0;
 	int loop = 1;
 	char *candyName = Producer->name;
-	struct timespec SleepTime;
+	__useconds_t sleepTime;
 	int testLoop;
 
-	SleepTime.tv_sec = Producer->duration / MSPERSEC;
-	SleepTime.tv_nsec = (Producer->duration % MSPERSEC) * NSPERMS;
+	sleepTime = (__useconds_t) Producer->duration * MS;
 
 	while (loop) {
 
@@ -66,7 +65,7 @@ void *produceCandy (void *c) {
 		sem_post(&producerCritSection->fillCount);			// Increment count of full slots
 
 		// Sleep
-		nanosleep(&SleepTime, NULL);
+		usleep(sleepTime);
 	}
 
 	pthread_exit(NULL);

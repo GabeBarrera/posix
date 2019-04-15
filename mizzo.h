@@ -15,8 +15,7 @@
 #define FROG_BITE 1
 #define ESCARGOT 0
 
-#define MSPERSEC 1000			// One thousand milliseconds per second
-#define NSPERMS 1000000			// One million nanoseconds per millisecond
+#define MS 1000			// One thousand microseconds per milliseconds
 
 typedef struct {
 	int storage[BELT_MAX];		// conveyor belt storage

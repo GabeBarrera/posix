@@ -6,10 +6,9 @@ void *consumeCandy (void *w) {
 	semBuffer *consumerCritSection = Consumer->crit_section;
 	int candyConsumed = 0, i;
 	int loop = 1;
-	struct timespec SleepTime;
+	__useconds_t sleepTime;
 
-	SleepTime.tv_sec = Consumer->duration / MSPERSEC;
-	SleepTime.tv_nsec = (Consumer->duration % MSPERSEC) * NSPERMS;
+	sleepTime = (__useconds_t) Consumer->duration * MS;
 	
 	while (loop) {
 		sem_wait(&consumerCritSection->fillCount);			// Decrement full count
@@ -23,7 +22,6 @@ void *consumeCandy (void *w) {
 				for (i=0; i<consumerCritSection->beltCount; i++)
 					consumerCritSection->storage[i] = consumerCritSection->storage[i+1];
 				consumerCritSection->beltCount--;
-
 
 				// Handle Frog Bites
 				if (candyConsumed == FROG_BITE) {
@@ -62,7 +60,7 @@ void *consumeCandy (void *w) {
 		sem_post(&consumerCritSection->emptyCount);			// Increment count of empty slots
 
 		// Sleep
-		nanosleep(&SleepTime, NULL);
+		usleep(sleepTime);
 	}
 
 	pthread_exit(NULL);
