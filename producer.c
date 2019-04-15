@@ -13,7 +13,6 @@ void *produceCandy (void *c) {
 	int loop = 1;
 	char *candyName = Producer->name;
 	__useconds_t sleepTime;
-	int testLoop;
 
 	sleepTime = (__useconds_t) Producer->duration * MS;
 

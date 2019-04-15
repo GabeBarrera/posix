@@ -19,7 +19,7 @@
  * 
  */ 
 int main (int argc, char *argv[]) {
-	int flagCheck;
+	int flag;
 
 	semBuffer *crit_section = malloc(sizeof(semBuffer));
 
@@ -48,8 +48,8 @@ int main (int argc, char *argv[]) {
 	ethel->name = "Ethel";
 
 	// Checking optional command line arguments
-	while ((flagCheck = getopt(argc, argv, "E:L:f:e:")) != -1) {
-		switch(flagCheck) {
+	while ((flag = getopt(argc, argv, "E:L:f:e:")) != -1) {
+		switch(flag) {
 			case 'E':
 				ethel->duration = atoi(optarg);
 				break;
@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
 				escargot->duration = atoi(optarg);
 				break;
 			case '?':
-				exit(0);
+				printf("\n Error. Incorrtc Flags \n");
 			default:
 				exit(0);
 		}
