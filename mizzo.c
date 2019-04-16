@@ -19,37 +19,37 @@
  * -f [num]		Frog Bite ms delay
  */ 
 int main (int argc, char *argv[]) {
-	int flag;
-
+	int flag; // For command line flags
 	buffer *critical_sect = malloc(sizeof(buffer));
 
 	// Initialize totals and counters all to 0
-	critical_sect->beltCount = critical_sect->numFrogs = critical_sect->numEscargot = 
+	critical_sect->numFrogs = critical_sect->numEscargot = 0;
 	critical_sect->prodTot = critical_sect->consTot = 0;
+	critical_sect->beltCount = 0;
 
+	// Initialize Frog Bite and Escargo producers
 	producer *frogBite = malloc(sizeof(producer));
 	frogBite->critical_sect = critical_sect;
 	frogBite->produced = frogBite->msDelay = 0;
-	// frogBite->name = "frog bite";
 	frogBite->type = "frog bite";
 
 	producer *escargot = malloc(sizeof(producer));
 	escargot->critical_sect = critical_sect;
 	escargot->produced = escargot->msDelay = 0;
-	// escargot->name = "escargot";
 	escargot->type = "escargot";
+
+	// Initialize Ethel and Lucy consumers
+	consumer *ethel = malloc(sizeof(consumer));
+	ethel->critical_sect = critical_sect;
+	ethel->consumeFB = ethel->consumeES = ethel->msDelay = 0;
+	ethel->name = "Ethel";
 
 	consumer *lucy = malloc(sizeof(consumer));
 	lucy->critical_sect = critical_sect;
-	lucy->frogBiteConsumed = lucy->escargotConsumed = lucy->msDelay = 0;
+	lucy->consumeFB = lucy->consumeES = lucy->msDelay = 0;
 	lucy->name = "Lucy";
 
-	consumer *ethel = malloc(sizeof(consumer));
-	ethel->critical_sect = critical_sect;
-	ethel->frogBiteConsumed = ethel->escargotConsumed = ethel->msDelay = 0;
-	ethel->name = "Ethel";
-
-	// Checking optional command line arguments
+	// Optional CLI flgs
 	while ((flag = getopt(argc, argv, "E:L:f:e:")) != -1) {
 		switch(flag) {
 			case 'E':
@@ -70,8 +70,6 @@ int main (int argc, char *argv[]) {
 				exit(0);
 		}
 	}
-
-	pthread_t producerThread, consumerThread;
 	pthread_t frogThread, escargotThread, lucyThread, ethelThread;
 
 	// Initialize semaphores
@@ -84,21 +82,20 @@ int main (int argc, char *argv[]) {
 	pthread_mutex_init(&critical_sect->mutex, NULL);
 
 	// Producer Threads
-	pthread_create(&frogThread, NULL, produceCandy, (void*) frogBite);
-	pthread_create(&escargotThread, NULL, produceCandy, (void*) escargot);
+	pthread_create(&frogThread, NULL, candyProducer, (void*) frogBite);
+	pthread_create(&escargotThread, NULL, candyProducer, (void*) escargot);
 
 	// Consumer Threads
-	pthread_create(&ethelThread, NULL, consumeCandy, (void*) ethel);
-	pthread_create(&lucyThread, NULL, consumeCandy, (void*) lucy);
+	pthread_create(&ethelThread, NULL, candyConsumer, (void*) ethel);
+	pthread_create(&lucyThread, NULL, candyConsumer, (void*) lucy);
 
-	// Production Output
-	sem_wait(&critical_sect->barrierSem);
-	printf("\nPRODUCTION REPORT\n");
-	printf("------------------------------------------\n");
+	// Production Report
+	sem_wait(&critical_sect->barrierSem); // When factory is done, print report
+	printf("\nPRODUCTION REPORT\n------------------------------------------\n");
 	printf("Crunchy Frog Bite producer generated %d candies\n", frogBite->produced);
 	printf("Escargot Sucker producer generated %d candies\n", escargot->produced);
-	printf("Lucy consumed %d Crunchy Frog Bites + %d Escargot Suckers = %d\n", lucy->frogBiteConsumed, lucy->escargotConsumed, lucy->frogBiteConsumed + lucy->escargotConsumed);
-	printf("Ethel consumed %d Crunchy Frog Bites + %d Escargot Suckers = %d\n", ethel->frogBiteConsumed, ethel->escargotConsumed, ethel->frogBiteConsumed + ethel->escargotConsumed);
+	printf("Lucy consumed %d Crunchy Frog Bites + %d Escargot Suckers = %d\n", lucy->consumeFB, lucy->consumeES, lucy->consumeFB + lucy->consumeES);
+	printf("Ethel consumed %d Crunchy Frog Bites + %d Escargot Suckers = %d\n", ethel->consumeFB, ethel->consumeES, ethel->consumeFB + ethel->consumeES);
 
 	free(lucy);
 	free(ethel);

@@ -6,18 +6,16 @@
 // it checks for which type of candy is being passed in
 // through the data structure, and produces the correct
 // one.
-void *produceCandy (void *c) {
+void *candyProducer (void *c) {
 	producer *Producer = (producer *)c;
 	buffer *producerCritSection = Producer->critical_sect;
 	int candyMade = 0;
 	int loop = 1;
 	char *candyName = Producer->type;
 	__useconds_t sleepTime;
-
 	sleepTime = (__useconds_t) (Producer->msDelay * MS);
 
 	while (loop) {
-
 		// Produce Item
 		if (strcmp(candyName, "frog bite") == 0)
 			candyMade = FROG_BITE;
@@ -33,13 +31,13 @@ void *produceCandy (void *c) {
 					pthread_mutex_unlock(&producerCritSection->mutex);
 					sem_wait(&producerCritSection->frogSem);
 					pthread_mutex_lock(&producerCritSection->mutex);
-					producerCritSection->storage[producerCritSection->beltCount++] = candyMade;
+					producerCritSection->conveyor_belt[producerCritSection->beltCount++] = candyMade;
 					producerCritSection->numFrogs++;
 				}
 
 				// Handle Escargot Sucker
 				else if (candyMade == ESCARGOT) {
-					producerCritSection->storage[producerCritSection->beltCount++] = candyMade;
+					producerCritSection->conveyor_belt[producerCritSection->beltCount++] = candyMade;
 					producerCritSection->numEscargot++;
 				}
 
@@ -61,7 +59,7 @@ void *produceCandy (void *c) {
 			} else loop = 0;
 
 		pthread_mutex_unlock(&producerCritSection->mutex);	// Exit critical region
-		sem_post(&producerCritSection->filledSpace);			// Increment count of full slots
+		sem_post(&producerCritSection->filledSpace);		// Increment count of full slots
 
 		usleep(sleepTime); // Sleep
 	}

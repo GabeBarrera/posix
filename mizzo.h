@@ -15,22 +15,20 @@
 #define MS 1000				// 1000 microseconds per 1 ms
 
 typedef struct {
-	int storage[BELT_MAX];		// conveyor belt storage
-
 	// Counters
 	int beltCount;
 	int numFrogs;
 	int numEscargot;
-
 	// Totals
 	int prodTot;
 	int consTot;
-
+	// Conveyor Belt
+	int conveyor_belt[BELT_MAX];
 	// Semaphores
 	sem_t filledSpace;			// Items produced
 	sem_t freeSpace;			// remaining space
 	sem_t frogSem;				// Frogs on conveyor belt
-	sem_t barrierSem;
+	sem_t barrierSem;			// Used for waiting production report
 
 	// Mutexes
 	pthread_mutex_t mutex;		// Protects the counters
@@ -48,13 +46,12 @@ typedef struct {
 typedef struct {
 	buffer *critical_sect;
 	int msDelay;
-	int frogBiteConsumed;
-	int escargotConsumed;
+	int consumeFB;
+	int consumeES;
 	char *name;
 } consumer;
 
-void *produceCandy (void *c);
-
-void *consumeCandy (void *w);
+void *candyProducer(void *c); // Producer function
+void *candyConsumer(void *w); // Consumer function
 
 #endif
