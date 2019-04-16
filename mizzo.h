@@ -41,14 +41,14 @@ typedef struct {
 typedef struct {
 	semBuffer *crit_section;
 	int produced;
-	int duration;
+	int msDelay;
 	char *name;
 } producer;
 
 // Consumer Struct (for Ethel & Lucy)
 typedef struct {
 	semBuffer *crit_section;
-	int duration;
+	int msDelay;
 	int frogBiteConsumed;
 	int escargotConsumed;
 	char *name;

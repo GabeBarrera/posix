@@ -1,5 +1,3 @@
-#include "mizzo.h"
-
 /**
  * mizzo.c
  * 
@@ -8,15 +6,17 @@
  * production is complete, a report is generated. 
  */
 
-// Main driver. Initializes the semaphore buffer and all
-// the threads, producers, and consumers. It blocks as it
-// waits for production to finish, then proceeds to
-// print a production report output
+#include "mizzo.h"
 
 /**
- * MAIN	
- * 	
- * 
+ * MAIN
+ *
+ * Run "make" and execute "./mizzo".
+ * Can pass the following flags:
+ * -E [num]		Ethel's ms delay
+ * -L [num]		Lucy's ms delay
+ * -e [num]		Escargot ms delay
+ * -f [num]		Frog Bite ms delay
  */ 
 int main (int argc, char *argv[]) {
 	int flag;
@@ -29,38 +29,40 @@ int main (int argc, char *argv[]) {
 
 	producer *frogBite = malloc(sizeof(producer));
 	frogBite->crit_section = crit_section;
-	frogBite->produced = frogBite->duration = 0;
+	frogBite->produced = frogBite->msDelay = 0;
+	// frogBite->name = "frog bite";
 	frogBite->name = "frog bite";
 
 	producer *escargot = malloc(sizeof(producer));
 	escargot->crit_section = crit_section;
-	escargot->produced = escargot->duration = 0;
+	escargot->produced = escargot->msDelay = 0;
+	// escargot->name = "escargot";
 	escargot->name = "escargot";
 
 	consumer *lucy = malloc(sizeof(consumer));
 	lucy->crit_section = crit_section;
-	lucy->frogBiteConsumed = lucy->escargotConsumed = lucy->duration = 0;
+	lucy->frogBiteConsumed = lucy->escargotConsumed = lucy->msDelay = 0;
 	lucy->name = "Lucy";
 
 	consumer *ethel = malloc(sizeof(consumer));
 	ethel->crit_section = crit_section;
-	ethel->frogBiteConsumed = ethel->escargotConsumed = ethel->duration = 0;
+	ethel->frogBiteConsumed = ethel->escargotConsumed = ethel->msDelay = 0;
 	ethel->name = "Ethel";
 
 	// Checking optional command line arguments
 	while ((flag = getopt(argc, argv, "E:L:f:e:")) != -1) {
 		switch(flag) {
 			case 'E':
-				ethel->duration = atoi(optarg);
+				ethel->msDelay = atoi(optarg);
 				break;
 			case 'L':
-				lucy->duration = atoi(optarg);
+				lucy->msDelay = atoi(optarg);
 				break;
 			case 'f':
-				frogBite->duration = atoi(optarg);
+				frogBite->msDelay = atoi(optarg);
 				break;
 			case 'e':
-				escargot->duration = atoi(optarg);
+				escargot->msDelay = atoi(optarg);
 				break;
 			case '?':
 				printf("\n Error: -E [n] -L [n] -e [n] -f [n] \n");
