@@ -1,3 +1,16 @@
+/**
+ * mizzo.h
+ * 
+ * Gabriel Barrera
+ * Tara Vu
+ * Professor Roch
+ * CS 570
+ * Due Date: 04/16/19
+ * 
+ * The header file. Contains all the variable definitons
+ * structs, and producer/consumer functions needed for
+ * the Mizzo Candy Factory.
+ */
 #ifndef MIZZO_H
 #define MIZZO_H
 #include <semaphore.h>
@@ -15,43 +28,40 @@
 #define MS 1000				// 1000 microseconds per 1 ms
 
 typedef struct {
-	// Counters
+	// Counters, Totals, and Conveyor Belt
 	int beltCount;
 	int numFrogs;
 	int numEscargot;
-	// Totals
 	int prodTot;
 	int consTot;
-	// Conveyor Belt
 	int conveyor_belt[BELT_MAX];
+	// Counter Protector
+	pthread_mutex_t mutex;		// Aids counter integrity/accuracy during production
 	// Semaphores
-	sem_t filledSpace;			// Items produced
-	sem_t freeSpace;			// remaining space
+	sem_t filledSpace;			// Candy produced
+	sem_t freeSpace;			// Available space
 	sem_t frogSem;				// Frogs on conveyor belt
-	sem_t barrierSem;			// Used for waiting production report
-
-	// Mutexes
-	pthread_mutex_t mutex;		// Protects the counters
+	sem_t inProduction;			// Used for waiting production report
 } buffer;
 
 // Producer Struct (for Frog Bites & Escargot)
 typedef struct {
 	buffer *critical_sect;
-	int produced;
-	int msDelay;
-	char *type;
+	int msDelay;	// Delay in milliseconds
+	int produced;	// Num of candies produced
+	char *type;		// Candy ID tag
 } producer;
 
 // Consumer Struct (for Ethel & Lucy)
 typedef struct {
 	buffer *critical_sect;
-	int msDelay;
-	int consumeFB;
-	int consumeES;
-	char *name;
+	int msDelay;	// Delay in milliseconds
+	int consumeFB; 	// Frog Bite consumption
+	int consumeES; 	// Escargot consumption
+	char *name;		// Consumer ID tag
 } consumer;
 
-void *candyProducer(void *c); // Producer function
-void *candyConsumer(void *w); // Consumer function
+void *candyProducer(void *conveyor); // Producer function
+void *candyConsumer(void *worker); // Consumer function
 
 #endif

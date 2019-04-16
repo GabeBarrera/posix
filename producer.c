@@ -1,66 +1,72 @@
+/**
+ * producer.c
+ * 
+ * Gabriel Barrera
+ * Tara Vu
+ * Professor Roch
+ * CS 570
+ * Due Date: 04/16/19
+ * 
+ * Factory production. Frog Bite and Escargot Sucker producers
+ * make candies and put them onto the conveyor belt. This is
+ * done in a while loop untl the max num of candies is produced.
+ * Data struct info is passed in to specify the type of candy a 
+ * producer is supposed to make.
+ */
 #include "mizzo.h"
 
-// Producer file. Production runs inside a while loop
-// that is broken once the total items produced
-// goes past the given limit (TOTAL_CANDY). Inside the loop,
-// it checks for which type of candy is being passed in
-// through the data structure, and produces the correct
-// one.
-void *candyProducer (void *c) {
-	producer *Producer = (producer *)c;
-	buffer *producerCritSection = Producer->critical_sect;
-	int candyMade = 0;
-	int loop = 1;
-	char *candyName = Producer->type;
-	__useconds_t sleepTime;
+void *candyProducer (void *conveyor) {
+	producer *Producer = (producer *)conveyor;
+	buffer *critSectProducer = Producer->critical_sect;
+	int candyMade = 0; // Num of candy made
+	int producing = 1; // While loop variable
+	char *candyName = Producer->type; // Type of candy to produce
+	__useconds_t sleepTime; // Delay
 	sleepTime = (__useconds_t) (Producer->msDelay * MS);
 
-	while (loop) {
+	while (producing) {
 		// Produce Item
 		if (strcmp(candyName, "frog bite") == 0)
 			candyMade = FROG_BITE;
 		else if (strcmp(candyName, "escargot") == 0)
 			candyMade = ESCARGOT;
 
-		sem_wait(&producerCritSection->freeSpace); 		// Decrement empty count
-		pthread_mutex_lock(&producerCritSection->mutex); 	// Enter critical section
-			if (producerCritSection->prodTot < CANDY_TOTAL) {
+		sem_wait(&critSectProducer->freeSpace); 		// Lock empty space
+		pthread_mutex_lock(&critSectProducer->mutex); 	// Entering critical section
+			if (critSectProducer->prodTot < CANDY_TOTAL) {
 
-				// Handle Frog Bites
+				// Produce Frog Bites
 				if (candyMade == FROG_BITE) {
-					pthread_mutex_unlock(&producerCritSection->mutex);
-					sem_wait(&producerCritSection->frogSem);
-					pthread_mutex_lock(&producerCritSection->mutex);
-					producerCritSection->conveyor_belt[producerCritSection->beltCount++] = candyMade;
-					producerCritSection->numFrogs++;
+					pthread_mutex_unlock(&critSectProducer->mutex);
+					sem_wait(&critSectProducer->frogSem);
+					pthread_mutex_lock(&critSectProducer->mutex);
+					critSectProducer->conveyor_belt[critSectProducer->beltCount++] = candyMade;
+					critSectProducer->numFrogs++;
 				}
 
-				// Handle Escargot Sucker
+				// Produce Escargot Suckers
 				else if (candyMade == ESCARGOT) {
-					producerCritSection->conveyor_belt[producerCritSection->beltCount++] = candyMade;
-					producerCritSection->numEscargot++;
+					critSectProducer->conveyor_belt[critSectProducer->beltCount++] = candyMade;
+					critSectProducer->numEscargot++;
 				}
 
-				// Update Counters
-				producerCritSection->prodTot++;
-
-				// Update local thread counter
+				// Update Production and Local Thread Counters
+				critSectProducer->prodTot++;
 				Producer->produced++;
-
+				
 				// Output
 				printf("Belt: %d frogs + %d escargots = %d. produced: %d\t", 
-					producerCritSection->numFrogs, producerCritSection->numEscargot, 
-					producerCritSection->beltCount, producerCritSection->prodTot);
+					critSectProducer->numFrogs, critSectProducer->numEscargot, 
+					critSectProducer->beltCount, critSectProducer->prodTot);
 				if (candyMade == FROG_BITE)
 					printf("Added crunchy frog bite.\n");
 				else if (candyMade == ESCARGOT)
 					printf("Added escargot sucker.\n");
 				fflush(stdout);
-			} else loop = 0;
+			} else producing = 0;
 
-		pthread_mutex_unlock(&producerCritSection->mutex);	// Exit critical region
-		sem_post(&producerCritSection->filledSpace);		// Increment count of full slots
-
+		pthread_mutex_unlock(&critSectProducer->mutex);	// Exiting critical section
+		sem_post(&critSectProducer->filledSpace);		// Unlock filled space
 		usleep(sleepTime); // Sleep
 	}
 
