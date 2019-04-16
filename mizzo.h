@@ -1,6 +1,5 @@
 #ifndef MIZZO_H
 #define MIZZO_H
-
 #include <semaphore.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -35,19 +34,19 @@ typedef struct {
 
 	// Mutexes
 	pthread_mutex_t mutex;		// Protects the counters
-} semBuffer;
+} buffer;
 
 // Producer Struct (for Frog Bites & Escargot)
 typedef struct {
-	semBuffer *crit_section;
+	buffer *critical_sect;
 	int produced;
 	int msDelay;
-	char *name;
+	char *type;
 } producer;
 
 // Consumer Struct (for Ethel & Lucy)
 typedef struct {
-	semBuffer *crit_section;
+	buffer *critical_sect;
 	int msDelay;
 	int frogBiteConsumed;
 	int escargotConsumed;

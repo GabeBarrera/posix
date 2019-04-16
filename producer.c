@@ -8,10 +8,10 @@
 // one.
 void *produceCandy (void *c) {
 	producer *Producer = (producer *)c;
-	semBuffer *producerCritSection = Producer->crit_section;
+	buffer *producerCritSection = Producer->critical_sect;
 	int candyMade = 0;
 	int loop = 1;
-	char *candyName = Producer->name;
+	char *candyName = Producer->type;
 	__useconds_t sleepTime;
 
 	sleepTime = (__useconds_t) (Producer->msDelay * MS);

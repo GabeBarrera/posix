@@ -3,7 +3,7 @@
 // Consumer 
 void *consumeCandy (void *w) {
 	consumer *Consumer = (consumer *)w;
-	semBuffer *consumerCritSection = Consumer->crit_section;
+	buffer *consumerCritSection = Consumer->critical_sect;
 	int candyConsumed = 0, i;
 	int loop = 1;
 	__useconds_t sleepTime;

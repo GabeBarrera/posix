@@ -21,31 +21,31 @@
 int main (int argc, char *argv[]) {
 	int flag;
 
-	semBuffer *crit_section = malloc(sizeof(semBuffer));
+	buffer *critical_sect = malloc(sizeof(buffer));
 
 	// Initialize totals and counters all to 0
-	crit_section->beltCount = crit_section->numFrogs = crit_section->numEscargot = 
-	crit_section->prodTot = crit_section->consTot = 0;
+	critical_sect->beltCount = critical_sect->numFrogs = critical_sect->numEscargot = 
+	critical_sect->prodTot = critical_sect->consTot = 0;
 
 	producer *frogBite = malloc(sizeof(producer));
-	frogBite->crit_section = crit_section;
+	frogBite->critical_sect = critical_sect;
 	frogBite->produced = frogBite->msDelay = 0;
 	// frogBite->name = "frog bite";
-	frogBite->name = "frog bite";
+	frogBite->type = "frog bite";
 
 	producer *escargot = malloc(sizeof(producer));
-	escargot->crit_section = crit_section;
+	escargot->critical_sect = critical_sect;
 	escargot->produced = escargot->msDelay = 0;
 	// escargot->name = "escargot";
-	escargot->name = "escargot";
+	escargot->type = "escargot";
 
 	consumer *lucy = malloc(sizeof(consumer));
-	lucy->crit_section = crit_section;
+	lucy->critical_sect = critical_sect;
 	lucy->frogBiteConsumed = lucy->escargotConsumed = lucy->msDelay = 0;
 	lucy->name = "Lucy";
 
 	consumer *ethel = malloc(sizeof(consumer));
-	ethel->crit_section = crit_section;
+	ethel->critical_sect = critical_sect;
 	ethel->frogBiteConsumed = ethel->escargotConsumed = ethel->msDelay = 0;
 	ethel->name = "Ethel";
 
@@ -75,13 +75,13 @@ int main (int argc, char *argv[]) {
 	pthread_t frogThread, escargotThread, lucyThread, ethelThread;
 
 	// Initialize semaphores
-	sem_init(&crit_section->filledSpace, 0, 0);
-	sem_init(&crit_section->freeSpace, 0, BELT_MAX);
-	sem_init(&crit_section->frogSem, 0, FROG_MAX);
-	sem_init(&crit_section->barrierSem, 0, 0);
+	sem_init(&critical_sect->filledSpace, 0, 0);
+	sem_init(&critical_sect->freeSpace, 0, BELT_MAX);
+	sem_init(&critical_sect->frogSem, 0, FROG_MAX);
+	sem_init(&critical_sect->barrierSem, 0, 0);
 
 	// Initialize mutexes
-	pthread_mutex_init(&crit_section->mutex, NULL);
+	pthread_mutex_init(&critical_sect->mutex, NULL);
 
 	// Producer Threads
 	pthread_create(&frogThread, NULL, produceCandy, (void*) frogBite);
@@ -92,7 +92,7 @@ int main (int argc, char *argv[]) {
 	pthread_create(&lucyThread, NULL, consumeCandy, (void*) lucy);
 
 	// Production Output
-	sem_wait(&crit_section->barrierSem);
+	sem_wait(&critical_sect->barrierSem);
 	printf("\nPRODUCTION REPORT\n");
 	printf("------------------------------------------\n");
 	printf("Crunchy Frog Bite producer generated %d candies\n", frogBite->produced);
@@ -104,7 +104,7 @@ int main (int argc, char *argv[]) {
 	free(ethel);
 	free(escargot);
 	free(frogBite);
-	free(crit_section);
+	free(critical_sect);
 
 	exit(0);
 }
