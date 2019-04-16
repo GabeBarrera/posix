@@ -8,7 +8,7 @@ void *consumeCandy (void *w) {
 	int loop = 1;
 	__useconds_t sleepTime;
 
-	sleepTime = (__useconds_t) Consumer->duration * MS;
+	sleepTime = (__useconds_t) (Consumer->duration * MS);
 	
 	while (loop) {
 		sem_wait(&consumerCritSection->fillCount);			// Decrement full count
@@ -65,5 +65,3 @@ void *consumeCandy (void *w) {
 
 	pthread_exit(NULL);
 }
-
-

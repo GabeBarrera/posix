@@ -60,5 +60,3 @@ void *produceCandy (void *c);
 void *consumeCandy (void *w);
 
 #endif
-
-

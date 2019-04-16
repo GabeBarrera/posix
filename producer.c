@@ -14,7 +14,7 @@ void *produceCandy (void *c) {
 	char *candyName = Producer->name;
 	__useconds_t sleepTime;
 
-	sleepTime = (__useconds_t) Producer->duration * MS;
+	sleepTime = (__useconds_t) (Producer->duration * MS);
 
 	while (loop) {
 
@@ -69,5 +69,3 @@ void *produceCandy (void *c) {
 
 	pthread_exit(NULL);
 }
-
-

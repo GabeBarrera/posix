@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
 				escargot->duration = atoi(optarg);
 				break;
 			case '?':
-				printf("\n Error. Incorrtc Flags \n");
+				printf("\n Error: -E [n] -L [n] -e [n] -f [n] \n");
 			default:
 				exit(0);
 		}
@@ -106,5 +106,3 @@ int main (int argc, char *argv[]) {
 
 	exit(0);
 }
-
-
