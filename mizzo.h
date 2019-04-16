@@ -5,34 +5,31 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> // for sleep
-#include <string.h> //for string compare
+#include <string.h>
+#include <unistd.h>
 
-#define FROG_MAX 3
-#define BELT_MAX 10		// Total items on conveyor belt at once
-#define CANDY_TOTAL 100		// Total items produced by a candy generator
-
-#define FROG_BITE 1
-#define ESCARGOT 0
-
-#define MS 1000			// One thousand microseconds per milliseconds
+#define CANDY_TOTAL 100		// Max items allowed to be produced
+#define BELT_MAX 10			// Max items allowed on belt
+#define FROG_MAX 3			// Max frogs allowed on belt
+#define FROG_BITE 1			// Define frog bite
+#define ESCARGOT 0			// Define escargot
+#define MS 1000				// 1000 microseconds per 1 ms
 
 typedef struct {
 	int storage[BELT_MAX];		// conveyor belt storage
 
 	// Counters
 	int beltCount;
-	int frogCount;
-	int escargotCount;
-	int barrierCount;
+	int numFrogs;
+	int numEscargot;
 
 	// Totals
-	int totalProduced;
-	int totalConsumed;
+	int prodTot;
+	int consTot;
 
 	// Semaphores
-	sem_t fillCount;			// Items produced
-	sem_t emptyCount;			// remaining space
+	sem_t filledSpace;			// Items produced
+	sem_t freeSpace;			// remaining space
 	sem_t frogSem;				// Frogs on conveyor belt
 	sem_t barrierSem;
 
@@ -40,6 +37,7 @@ typedef struct {
 	pthread_mutex_t mutex;		// Protects the counters
 } semBuffer;
 
+// Producer Struct (for Frog Bites & Escargot)
 typedef struct {
 	semBuffer *crit_section;
 	int produced;
@@ -47,6 +45,7 @@ typedef struct {
 	char *name;
 } producer;
 
+// Consumer Struct (for Ethel & Lucy)
 typedef struct {
 	semBuffer *crit_section;
 	int duration;

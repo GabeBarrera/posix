@@ -11,9 +11,9 @@ void *consumeCandy (void *w) {
 	sleepTime = (__useconds_t) (Consumer->duration * MS);
 	
 	while (loop) {
-		sem_wait(&consumerCritSection->fillCount);			// Decrement full count
+		sem_wait(&consumerCritSection->filledSpace);			// Decrement full count
 		pthread_mutex_lock(&consumerCritSection->mutex);	// Enter critical section
-			if (consumerCritSection->totalConsumed < CANDY_TOTAL) {
+			if (consumerCritSection->consTot < CANDY_TOTAL) {
 
 				// Candy is first item off of conveyor belt
 				candyConsumed = consumerCritSection->storage[0];
@@ -26,15 +26,15 @@ void *consumeCandy (void *w) {
 				// Handle Frog Bites
 				if (candyConsumed == FROG_BITE) {
 					sem_post(&consumerCritSection->frogSem);
-					consumerCritSection->frogCount--;
+					consumerCritSection->numFrogs--;
 				}
 
 				// Handle Escargot Suckers
 				else if (candyConsumed == ESCARGOT) 
-					consumerCritSection->escargotCount--;
+					consumerCritSection->numEscargot--;
 
 				// Update counters
-				consumerCritSection->totalConsumed++;
+				consumerCritSection->consTot++;
 
 				// Update local thread counters
 				if (candyConsumed == FROG_BITE)
@@ -44,8 +44,8 @@ void *consumeCandy (void *w) {
 
 				// Output
 				printf("Belt: %d frogs + %d escargots = %d. produced: %d\t", 
-					consumerCritSection->frogCount, consumerCritSection->escargotCount, 
-					consumerCritSection->beltCount, consumerCritSection->totalProduced);
+					consumerCritSection->numFrogs, consumerCritSection->numEscargot, 
+					consumerCritSection->beltCount, consumerCritSection->prodTot);
 				if (candyConsumed == FROG_BITE)
 					printf("%s consumed crunchy frog bite.\n", Consumer->name);
 				else if (candyConsumed == ESCARGOT)
@@ -57,10 +57,9 @@ void *consumeCandy (void *w) {
 			}
 
 		pthread_mutex_unlock(&consumerCritSection->mutex);	// Exit critical region
-		sem_post(&consumerCritSection->emptyCount);			// Increment count of empty slots
+		sem_post(&consumerCritSection->freeSpace);			// Increment count of empty slots
 
-		// Sleep
-		usleep(sleepTime);
+		usleep(sleepTime); // Sleep
 	}
 
 	pthread_exit(NULL);

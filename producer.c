@@ -24,9 +24,9 @@ void *produceCandy (void *c) {
 		else if (strcmp(candyName, "escargot") == 0)
 			candyMade = ESCARGOT;
 
-		sem_wait(&producerCritSection->emptyCount); 		// Decrement empty count
+		sem_wait(&producerCritSection->freeSpace); 		// Decrement empty count
 		pthread_mutex_lock(&producerCritSection->mutex); 	// Enter critical section
-			if (producerCritSection->totalProduced < CANDY_TOTAL) {
+			if (producerCritSection->prodTot < CANDY_TOTAL) {
 
 				// Handle Frog Bites
 				if (candyMade == FROG_BITE) {
@@ -34,25 +34,25 @@ void *produceCandy (void *c) {
 					sem_wait(&producerCritSection->frogSem);
 					pthread_mutex_lock(&producerCritSection->mutex);
 					producerCritSection->storage[producerCritSection->beltCount++] = candyMade;
-					producerCritSection->frogCount++;
+					producerCritSection->numFrogs++;
 				}
 
 				// Handle Escargot Sucker
 				else if (candyMade == ESCARGOT) {
 					producerCritSection->storage[producerCritSection->beltCount++] = candyMade;
-					producerCritSection->escargotCount++;
+					producerCritSection->numEscargot++;
 				}
 
 				// Update Counters
-				producerCritSection->totalProduced++;
+				producerCritSection->prodTot++;
 
 				// Update local thread counter
 				Producer->produced++;
 
 				// Output
 				printf("Belt: %d frogs + %d escargots = %d. produced: %d\t", 
-					producerCritSection->frogCount, producerCritSection->escargotCount, 
-					producerCritSection->beltCount, producerCritSection->totalProduced);
+					producerCritSection->numFrogs, producerCritSection->numEscargot, 
+					producerCritSection->beltCount, producerCritSection->prodTot);
 				if (candyMade == FROG_BITE)
 					printf("Added crunchy frog bite.\n");
 				else if (candyMade == ESCARGOT)
@@ -61,10 +61,9 @@ void *produceCandy (void *c) {
 			} else loop = 0;
 
 		pthread_mutex_unlock(&producerCritSection->mutex);	// Exit critical region
-		sem_post(&producerCritSection->fillCount);			// Increment count of full slots
+		sem_post(&producerCritSection->filledSpace);			// Increment count of full slots
 
-		// Sleep
-		usleep(sleepTime);
+		usleep(sleepTime); // Sleep
 	}
 
 	pthread_exit(NULL);

@@ -24,8 +24,8 @@ int main (int argc, char *argv[]) {
 	semBuffer *crit_section = malloc(sizeof(semBuffer));
 
 	// Initialize totals and counters all to 0
-	crit_section->beltCount = crit_section->frogCount = crit_section->escargotCount = 
-	crit_section->totalProduced = crit_section->totalConsumed = crit_section->barrierCount = 0;
+	crit_section->beltCount = crit_section->numFrogs = crit_section->numEscargot = 
+	crit_section->prodTot = crit_section->consTot = 0;
 
 	producer *frogBite = malloc(sizeof(producer));
 	frogBite->crit_section = crit_section;
@@ -73,8 +73,8 @@ int main (int argc, char *argv[]) {
 	pthread_t frogThread, escargotThread, lucyThread, ethelThread;
 
 	// Initialize semaphores
-	sem_init(&crit_section->fillCount, 0, 0);
-	sem_init(&crit_section->emptyCount, 0, BELT_MAX);
+	sem_init(&crit_section->filledSpace, 0, 0);
+	sem_init(&crit_section->freeSpace, 0, BELT_MAX);
 	sem_init(&crit_section->frogSem, 0, FROG_MAX);
 	sem_init(&crit_section->barrierSem, 0, 0);
 
